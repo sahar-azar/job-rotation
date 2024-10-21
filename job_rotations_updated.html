@@ -64,22 +64,44 @@
     </div>
 
     <script>
-        const rotationData = {
-            42: { "Henri": "Unmapped nodes", "Rauno": "Traffic lights", "Mark": "Crossing mid-stops", "Marta": "Safety annotations", "Jihen": "Floater1", "Sahar": "Floater2" },
-            43: { "Henri": "Floater2", "Rauno": "Unmapped nodes", "Mark": "Traffic lights", "Marta": "Crossing mid-stops", "Jihen": "Safety annotations", "Sahar": "Floater1" },
-            44: { "Henri": "Floater1", "Rauno": "Floater2", "Mark": "Unmapped nodes", "Marta": "Traffic lights", "Jihen": "Crossing mid-stops", "Sahar": "Safety annotations" },
-            45: { "Henri": "Safety annotations", "Rauno": "Floater1", "Mark": "Floater2", "Marta": "Unmapped nodes", "Jihen": "Traffic lights", "Sahar": "Crossing mid-stops" },
-            46: { "Henri": "Crossing mid-stops", "Rauno": "Safety annotations", "Mark": "Floater1", "Marta": "Floater2", "Jihen": "Unmapped nodes", "Sahar": "Traffic lights" },
-            47: { "Henri": "Traffic lights", "Rauno": "Crossing mid-stops", "Mark": "Safety annotations", "Marta": "Floater1", "Jihen": "Floater2", "Sahar": "Unmapped nodes" },
-            48: { "Henri": "Floater2", "Rauno": "Traffic lights", "Mark": "Crossing mid-stops", "Marta": "Safety annotations", "Jihen": "Floater1", "Sahar": "Unmapped nodes" },
-            49: { "Henri": "Unmapped nodes", "Rauno": "Floater2", "Mark": "Traffic lights", "Marta": "Crossing mid-stops", "Jihen": "Safety annotations", "Sahar": "Floater1" },
-            50: { "Henri": "Floater1", "Rauno": "Unmapped nodes", "Mark": "Floater2", "Marta": "Traffic lights", "Jihen": "Crossing mid-stops", "Sahar": "Safety annotations" },
-            51: { "Henri": "Safety annotations", "Rauno": "Floater1", "Mark": "Unmapped nodes", "Marta": "Floater2", "Jihen": "Traffic lights", "Sahar": "Crossing mid-stops" },
-            52: { "Henri": "Crossing mid-stops", "Rauno": "Safety annotations", "Mark": "Floater1", "Marta": "Floater2", "Jihen": "Unmapped nodes", "Sahar": "Traffic lights" },
+        const names = ["Henri", "Rauno", "Mark", "Marta", "Jihen", "Sahar"];
+        const tasks = ["Unmapped nodes", "Traffic lights", "Crossing mid-stops", "Safety annotations", "Floater1", "Floater2"];
+
+        // Week 42 assignments are hardcoded as the starting point.
+        const week42 = {
+            "Henri": "Unmapped nodes",
+            "Rauno": "Traffic lights",
+            "Mark": "Crossing mid-stops",
+            "Marta": "Safety annotations",
+            "Jihen": "Floater1",
+            "Sahar": "Floater2"
         };
 
+        // Rotation function that follows the correct pattern
+        function getRotationForWeek(startingWeekData, weekNumber) {
+            const rotations = [startingWeekData];
+
+            // Process weeks starting from 43
+            for (let week = 43; week <= weekNumber; week++) {
+                const lastWeek = rotations[rotations.length - 1];
+                const newWeek = {};
+                
+                // Rotate following the logic provided:
+                newWeek["Henri"] = lastWeek["Sahar"];    // Henri gets Floater2 from Sahar
+                newWeek["Rauno"] = lastWeek["Henri"];    // Rauno moves to Henri's task
+                newWeek["Mark"] = lastWeek["Rauno"];     // Mark takes Rauno's task
+                newWeek["Marta"] = lastWeek["Mark"];     // Marta takes Mark's task
+                newWeek["Jihen"] = lastWeek["Marta"];    // Jihen takes Marta's task
+                newWeek["Sahar"] = lastWeek["Jihen"];    // Sahar moves to Floater1
+
+                rotations.push(newWeek);
+            }
+
+            return rotations[rotations.length - 1];
+        }
+
         function updateTable() {
-            const week = document.getElementById('weekSelect').value;
+            const week = parseInt(document.getElementById('weekSelect').value);
             const table = document.getElementById('table');
             table.innerHTML = `
                 <tr>
@@ -89,12 +111,14 @@
             `; // Reset table content
 
             if (week) {
-                const rotations = rotationData[week];
-                for (const name in rotations) {
+                const weekData = week === 42 ? week42 : getRotationForWeek(week42, week);
+
+                for (const name in weekData) {
                     const row = document.createElement('tr');
-                    row.innerHTML = `<td>${name}</td><td>${rotations[name]}</td>`;
+                    row.innerHTML = `<td>${name}</td><td>${weekData[name]}</td>`;
                     table.appendChild(row);
                 }
+
                 document.getElementById('rotationTable').style.display = 'block'; // Show the table
             } else {
                 document.getElementById('rotationTable').style.display = 'none'; // Hide the table if no week is selected
